@@ -3,7 +3,7 @@ defmodule DayFour do
   @dimensions 2
 
   def get_input do
-    {:ok, data} = File.read('input')
+    {:ok, data} = File.read('input_large')
 
     [input | boards] =
       data
@@ -14,6 +14,7 @@ defmodule DayFour do
       boards
       |> Enum.map(fn board ->
         board
+        |> String.trim()
         |> String.split()
         |> Enum.map(&String.to_integer/1)
         |> Enum.chunk_every(5)
