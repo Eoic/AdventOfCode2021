@@ -8,31 +8,13 @@ defmodule DayFive do
     |> Enum.map(&String.to_integer/1)
   end
 
-  def part_one(data) do
-    simulate(data, init_cache(data), 80)
-    |> Enum.reduce(0, fn {_, population_count}, sum ->
-      sum + population_count
-    end)
-  end
+  def part_one(data), do: get_population_count(data, init_cache(data), 80)
 
-  def part_two(data) do
-    simulate(data, init_cache(data), 256)
-    |> Enum.reduce(0, fn {_, population_count}, sum ->
-      sum + population_count
-    end)
-  end
+  def part_two(data), do: get_population_count(data, init_cache(data), 256)
 
   def init_cache(data) do
-    cache =
-      data
-      |> Enum.reduce(%{}, fn element, cache_acc ->
-        cache_acc
-        |> Map.get(element, 0)
-        |> (&Map.put(cache_acc, element, &1 + 1)).()
-      end)
-
     0..8
-    |> Enum.reduce(cache, fn element, cache_acc ->
+    |> Enum.reduce(Enum.frequencies(data), fn element, cache_acc ->
       cond do
         Map.has_key?(cache_acc, element) ->
           cache_acc
@@ -43,10 +25,11 @@ defmodule DayFive do
     end)
   end
 
-  def simulate(_, cache, 0), do: cache
+  def get_population_count(_, cache, 0),
+    do: cache |> Enum.reduce(0, fn {_, population_count}, sum -> sum + population_count end)
 
-  def simulate(data, cache, days) do
-    cache_delta =
+  def get_population_count(data, cache, days) do
+    cache_updated =
       cache
       |> Enum.reduce(cache, fn {timer_key, density}, cache_acc ->
         cond do
@@ -63,7 +46,7 @@ defmodule DayFive do
         end
       end)
 
-    simulate(data, cache_delta, days - 1)
+    get_population_count(data, cache_updated, days - 1)
   end
 
   def run do
