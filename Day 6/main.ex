@@ -1,4 +1,4 @@
-defmodule DayFive do
+defmodule DaySix do
   def get_input do
     {:ok, data} = File.read('input')
 
@@ -58,4 +58,4 @@ defmodule DayFive do
   end
 end
 
-DayFive.run()
+DaySix.run()
