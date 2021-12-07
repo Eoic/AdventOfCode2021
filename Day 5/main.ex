@@ -1,6 +1,6 @@
 defmodule DayFive do
   def get_input do
-    {:ok, data} = File.read('input')
+    {:ok, data} = File.read('input_large')
 
     data
     |> String.trim()
@@ -20,7 +20,7 @@ defmodule DayFive do
 
   def part_two(data), do: count_points(data, %{}, true)
 
-  def count_points([], points_counter, include_diagonals) do
+  def count_points([], points_counter, _) do
     points_counter |> Enum.reduce(0, fn {_, hits}, sum -> sum + if hits > 1, do: 1, else: 0 end)
   end
 
