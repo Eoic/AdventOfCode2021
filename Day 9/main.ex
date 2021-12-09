@@ -1,5 +1,5 @@
 defmodule DayNine do
-  @input_path "large"
+  @input_path "input"
 
   def get_input do
     {:ok, data} = File.read(@input_path)
