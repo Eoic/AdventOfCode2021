@@ -59,27 +59,39 @@ defmodule DayEight do
       output_split = String.split(output, " ")
       segments = create_segments_map(input_split)
 
-      tbr = segments
-      |> Map.get(1)
-      |> Enum.to_list()
+      tbr =
+        segments
+        |> Map.get(1)
+        |> Enum.to_list()
 
-      tlm = MapSet.difference(
-        Map.get(segments, 4),
-        Map.get(segments, 1)
-      ) |> Enum.to_list()
+      tlm =
+        MapSet.difference(
+          Map.get(segments, 4),
+          Map.get(segments, 1)
+        )
+        |> Enum.to_list()
 
-      top = MapSet.difference(
-        Map.get(segments, 7),
-        Map.get(segments, 1)
-      ) |> Enum.to_list()
+      top =
+        MapSet.difference(
+          Map.get(segments, 7),
+          Map.get(segments, 1)
+        )
+        |> Enum.to_list()
 
-      bbl = MapSet.union(
-        Map.get(segments, 4),
-        Map.get(segments, 7))
+      bbl =
+        MapSet.union(
+          Map.get(segments, 4),
+          Map.get(segments, 7)
+        )
         |> (&MapSet.difference(Map.get(segments, 8), &1)).()
         |> Enum.to_list()
 
-      create_display_configurations(@permutations, %{0 => top, 1 => tlm, 2 => tlm, 3 => bbl, 4 => bbl, 5 => tbr, 6 => tbr}, @segments_map, [])
+      create_display_configurations(
+        @permutations,
+        %{0 => top, 1 => tlm, 2 => tlm, 3 => bbl, 4 => bbl, 5 => tbr, 6 => tbr},
+        @segments_map,
+        []
+      )
       |> Enum.find(&validate_input(&1, @segments_map, input_split))
       |> decode_output_display(segments_map_inverse, output_split, [])
       |> Enum.join()
@@ -131,6 +143,7 @@ defmodule DayEight do
       0..9
       |> Enum.reduce_while(0, fn number, match_count ->
         number_positions_ref = Map.get(@segments_map, number)
+
         cond do
           match_count > 1 -> {:halt, match_count}
           positions == number_positions_ref -> {:cont, match_count + 1}
@@ -161,7 +174,10 @@ defmodule DayEight do
       queue,
       segment_reference,
       @segments_map,
-      [Map.put(segment_alignment, Map.get(segment_reference, 0) |> Enum.at(0), 0) | configurations]
+      [
+        Map.put(segment_alignment, Map.get(segment_reference, 0) |> Enum.at(0), 0)
+        | configurations
+      ]
     )
   end
 
