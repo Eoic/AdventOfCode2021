@@ -90,15 +90,6 @@ defmodule DayTwelve do
     }
   end
 
-  def filter_non_target_paths(paths, target_vertex) do
-    paths
-    |> Enum.filter(fn path ->
-      Enum.any?(path, fn vertex ->
-        Map.get(vertex, :name) === Map.get(target_vertex, :name)
-      end)
-    end)
-  end
-
   def run do
     data = get_input()
     IO.puts("Part one: #{part_one(data)}")
