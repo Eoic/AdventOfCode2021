@@ -12,11 +12,9 @@ defmodule DayFourteen do
     instructions =
       instructions_str
       |> String.split("\r\n")
-      |> Enum.reduce(%{}, fn instruction_token, instructions_map ->
-        %{"key" => key, "value" => value} =
-          Regex.named_captures(~r/(?<key>[A-Z]+)(?:\s->\s)(?<value>[A-Z]+)/, instruction_token)
-
-        Map.merge(instructions_map, %{key => value})
+      |> Enum.reduce(%{}, fn (instruction_token, instructions_map) ->
+        %{"key" => key, "value" => value} = Regex.named_captures(~r/(?<key>[A-Z]+)(?:\s->\s)(?<value>[A-Z]+)/, instruction_token)
+        Map.put(instructions_map, key, value)
       end)
 
     pairs =
@@ -49,7 +47,7 @@ defmodule DayFourteen do
 
   def simulate(pairs, instructions, step_count) do
     1..step_count
-      |> Enum.reduce(pairs, fn step_number, current_pairs ->
+      |> Enum.reduce(pairs, fn (_, current_pairs) ->
         apply_step(current_pairs, instructions)
       end)
   end
@@ -81,21 +79,21 @@ defmodule DayFourteen do
     infix = Map.get(instructions, pair_key)
 
     pairs_acc
-    |> Map.update(prefix <> infix, Map.get(pairs, pair_key), fn current_count -> current_count + Map.get(pairs, pair_key) end)
-    |> Map.update(infix <> suffix, Map.get(pairs, pair_key), fn current_count -> current_count + Map.get(pairs, pair_key) end)
+    |> Map.update(prefix <> infix, Map.get(pairs, pair_key), &(&1 + Map.get(pairs, pair_key)))
+    |> Map.update(infix <> suffix, Map.get(pairs, pair_key), &(&1 + Map.get(pairs, pair_key)))
   end
 
   def normalize_token_frequency(frequency_map) do
     frequency_map
     |> Map.keys()
     |> Enum.reduce(frequency_map, fn (token, acc_frequency_map) ->
-      Map.update!(acc_frequency_map, token, fn current_value -> round(current_value / 2) end)
+      Map.update!(acc_frequency_map, token, &(round(&1 / 2)))
     end)
   end
 
   def get_min_max_diff(pairs) do
     pairs
-    |> Enum.min_max_by(fn {_key, value} -> value end)
+    |> Enum.min_max_by(fn {_, value} -> value end)
     |> (fn ({{_, min}, {_, max}}) -> max - min end).()
   end
 
