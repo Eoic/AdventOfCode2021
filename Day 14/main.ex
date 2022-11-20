@@ -1,4 +1,4 @@
-defmodule DayThirteen do
+defmodule DayFourteen do
   @input_path "input"
 
   def get_input do
@@ -106,4 +106,4 @@ defmodule DayThirteen do
   end
 end
 
-DayThirteen.run()
+DayFourteen.run()
