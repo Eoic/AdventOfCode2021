@@ -1,8 +1,8 @@
 defmodule DayFifteen do
+  Mix.install([:libgraph])
   @input_path "input"
 
   def get_input do
-    Mix.install([:libgraph])
     {:ok, data} = File.read(@input_path)
 
     data
@@ -25,7 +25,17 @@ defmodule DayFifteen do
   end
 
   def part_two(data) do
-    :noop
+    data_unwrapped =
+      data
+      |> unwrap_map_vertical()
+      |> unwrap_map_horizontal()
+
+    [v_start, v_end] = get_start_end_vertices(data_unwrapped)
+
+    data_unwrapped
+    |> create_graph()
+    |> Graph.dijkstra(v_start, v_end)
+    |> get_total_risk()
   end
 
   def get_map_size(vertices) do
@@ -57,7 +67,7 @@ defmodule DayFifteen do
     [width, height] = get_map_size(vertices)
 
     0..(height - 2)
-    |> Enum.reduce(Graph.new(type: :directed), fn y, graph ->
+    |> Enum.reduce(Graph.new(type: :directed, vertex_identifier: fn v -> v end), fn y, graph ->
       0..(width - 2)
       |> Enum.reduce(graph, fn x, graph_acc ->
         vc1 = vertices |> Enum.at(y) |> Enum.at(x)
@@ -85,6 +95,32 @@ defmodule DayFifteen do
         )
       end)
     end)
+  end
+
+  def unwrap_map_vertical(vertices_list) do
+    [_, height] = get_map_size(vertices_list)
+
+    Enum.reduce(0..3, vertices_list, fn (cell_index, vertices_list_acc) ->
+      {_, right} = Enum.split(vertices_list_acc, cell_index * height)
+      vertices_list_acc ++ Enum.map(right, fn (row) -> increase_risk_row(row) end)
+    end)
+  end
+
+  def unwrap_map_horizontal(vertices_list) do
+    [width, height] = get_map_size(vertices_list)
+
+    Enum.map(0..(height - 1), fn (row_index) ->
+      row = Enum.at(vertices_list, row_index)
+
+      Enum.reduce(0..3, row, fn (cell_index, row_acc) ->
+        {_, right} = Enum.split(row_acc, cell_index * width)
+        row_acc ++ increase_risk_row(right)
+      end)
+    end)
+  end
+
+  def increase_risk_row(list) do
+    Enum.map(list, fn (risk_level) -> rem(risk_level, 9) + 1 end)
   end
 
   def run do
